@@ -1,66 +1,85 @@
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
+<!DOCTYPE html>
+<html>
+<head>
+<title>Login Test</title>
+<style>
+body{
+    font-family: Arial;
+    background:#f2f2f2;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
 
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.List;
+.box{
+    background:white;
+    padding:30px;
+    border-radius:8px;
+    width:300px;
+    text-align:center;
+}
 
-public class PexelsScraper {
+input{
+    width:90%;
+    padding:10px;
+    margin:10px 0;
+}
 
-    public static void main(String[] args) throws Exception {
+button{
+    padding:10px 20px;
+    cursor:pointer;
+}
 
-        System.setProperty("webdriver.chrome.driver","C:/chromedriver/chromedriver.exe");
+#msg{
+    margin-top:10px;
+    font-weight:bold;
+}
+</style>
+</head>
 
-        WebDriver driver = new ChromeDriver();
+<body>
 
-        // search page
-        driver.get("https://www.pexels.com/search/nature/");
+<div class="box">
+<h2>Login</h2>
 
-        Thread.sleep(5000); // wait for images
+<input type="text" placeholder="Username"><br>
 
-        List<WebElement> images = driver.findElements(By.tagName("img"));
+<input type="password" id="pass" placeholder="Password"><br>
 
-        int count = 0;
+<button onclick="checkPass()">Login</button>
 
-        for(WebElement img : images){
+<div id="msg"></div>
+</div>
 
-            try{
+<script>
+function checkPass(){
 
-                String src = img.getAttribute("src");
+    let pass = document.getElementById("pass").value;
 
-                if(src == null) continue;
+    let number = /[0-9]/;
+    let symbol = /[!@#$%^&*(),.?":{}|<>]/;
 
-                if(!src.startsWith("https")) continue;
-
-                URL url = new URL(src);
-                InputStream in = url.openStream();
-
-                FileOutputStream out = new FileOutputStream("pexels_image_"+count+".jpg");
-
-                byte[] buffer = new byte[2048];
-                int length;
-
-                while((length = in.read(buffer)) != -1){
-                    out.write(buffer,0,length);
-                }
-
-                in.close();
-                out.close();
-
-                System.out.println("Downloaded: " + src);
-
-                count++;
-
-            }catch(Exception e){
-                System.out.println("Skipped");
-            }
-
-            if(count >= 5) break;
-        }
-
-        driver.quit();
+    if(pass.length < 8){
+        msg("Password must be 8+ characters","red");
+    }
+    else if(!number.test(pass)){
+        msg("Password must contain a number","red");
+    }
+    else if(!symbol.test(pass)){
+        msg("Password must contain a symbol","red");
+    }
+    else{
+        msg("Password format valid","green");
     }
 }
+
+function msg(text,color){
+    let m = document.getElementById("msg");
+    m.innerText = text;
+    m.style.color = color;
+}
+</script>
+
+</body>
+</html>
